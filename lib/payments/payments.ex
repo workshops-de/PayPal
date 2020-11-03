@@ -180,7 +180,7 @@ defmodule PayPal.Payments.Payments do
     iex> PayPal.Payments.Payments.execute(payment_id, payer_id)
     {:ok, payment}
   """
-  @spec execute(String.t, String.t) :: {atom, any}
+  @spec execute(String.t(), String.t()) :: {atom, any}
   def execute(payment_id, payer_id) do
     PayPal.API.post("payments/payment/#{payment_id}/execute", %{payer_id: payer_id})
   end
@@ -200,7 +200,7 @@ defmodule PayPal.Payments.Payments do
     iex> PayPal.Payments.Payments.show(payment_id)
     {:ok, payment}
   """
-  @spec show(String.t) :: {atom, any}
+  @spec show(String.t()) :: {atom, any}
   def show(payment_id) do
     PayPal.API.get("payments/payment/#{payment_id}")
   end
@@ -247,7 +247,7 @@ defmodule PayPal.Payments.Payments do
     {:ok, payment}
 
   """
-  @spec update(String.t, list) :: {atom, any}
+  @spec update(String.t(), list) :: {atom, any}
   def update(payment_id, changes) do
     PayPal.API.patch("payments/payment/#{payment_id}", changes)
   end
@@ -272,6 +272,7 @@ defmodule PayPal.Payments.Payments do
     case PayPal.API.get("payments/payment?#{URI.encode_query(query)}") do
       {:ok, %{payments: payments}} ->
         {:ok, payments}
+
       error ->
         error
     end

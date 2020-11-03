@@ -20,7 +20,7 @@ defmodule PayPal.Payments.Captures do
     iex> PayPal.Payments.Captures.show(capture_id)
     {:ok, capture}
   """
-  @spec show(String.t) :: {atom, any}
+  @spec show(String.t()) :: {atom, any}
   def show(capture_id) do
     PayPal.API.get("payments/capture/#{capture_id}")
   end
@@ -45,7 +45,7 @@ defmodule PayPal.Payments.Captures do
     })
     {:ok, refund}
   """
-  @spec refund(String.t, map) :: {atom, any}
+  @spec refund(String.t(), map) :: {atom, any}
   def refund(payment_id, params) do
     PayPal.API.post("payments/capture/#{payment_id}/refund", params)
   end
