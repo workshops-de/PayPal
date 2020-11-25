@@ -35,7 +35,7 @@ defmodule PayPal.API do
 
     form = {:form, [grant_type: "client_credentials"]}
 
-    case HTTPoison.post(base_url() <> "oauth2/token", form, headers, options) do
+    case HTTPoison.post(base_url(:v1) <> "oauth2/token", form, headers, options) do
       {:ok, %{status_code: 401}} ->
         {:error, :unauthorised}
 
@@ -203,6 +203,24 @@ defmodule PayPal.API do
   end
 
   @spec base_url :: String.t()
+  defp base_url(version) do
+    case Application.get_env(:pay_pal, :environment) do
+      :sandbox ->
+        base_url_sandbox_version(version)
+
+      :live ->
+        base_url_live_version(version)
+
+      :prod ->
+        base_url_live_version(version)
+
+      _ ->
+        Logger.warn("[PayPal] No `env` found in config, use `sandbox` as default.")
+        base_url_sandbox_version(version)
+    end
+  end
+
+  @spec base_url :: String.t()
   defp base_url do
     case Application.get_env(:pay_pal, :environment) do
       :sandbox ->
@@ -220,6 +238,23 @@ defmodule PayPal.API do
     end
   end
 
+  defp base_url_sandbox_version(version) do
+    version = if version do
+      version
+    else
+      Application.get_env(:pay_pal, :version)
+    end
+    case version do
+      :v2 ->
+        Logger.info("[PayPal] is using version_2 sandbox url.")
+        @base_url_sandbox_version_two
+
+      _ ->
+        Logger.info("[PayPal] is using version_1 sandbox url.")
+        @base_url_sandbox_version_one
+    end
+  end
+
   defp base_url_sandbox_version do
     case Application.get_env(:pay_pal, :version) do
       :v2 ->
@@ -229,6 +264,23 @@ defmodule PayPal.API do
       _ ->
         Logger.info("[PayPal] is using version_1 sandbox url.")
         @base_url_sandbox_version_one
+    end
+  end
+
+  defp base_url_live_version(version) do
+    version = if version do
+      version
+    else
+      Application.get_env(:pay_pal, :version)
+    end
+    case version do
+      :v2 ->
+        Logger.info("[PayPal] is using version_2 live url.")
+        @base_url_live_version_two
+
+      _ ->
+        Logger.info("[PayPal] is using version_1 live url.")
+        @base_url_live_version_one
     end
   end
 
