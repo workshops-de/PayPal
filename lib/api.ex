@@ -186,7 +186,7 @@ defmodule PayPal.API do
       {:ok, %{status_code: 400}} ->
         {:error, :malformed_request}
 
-      {:ok, %{body: body}} = resp ->
+      {:ok, %{body: body}} = _resp ->
         {:error, body}
 
       _ ->
@@ -220,21 +220,20 @@ defmodule PayPal.API do
     end
   end
 
-  @spec base_url :: String.t()
   defp base_url do
     case Application.get_env(:pay_pal, :environment) do
       :sandbox ->
-        base_url_sandbox_version
+        base_url_sandbox_version()
 
       :live ->
-        base_url_live_version
+        base_url_live_version()
 
       :prod ->
-        base_url_live_version
+        base_url_live_version()
 
       _ ->
         Logger.warn("[PayPal] No `env` found in config, use `sandbox` as default.")
-        base_url_sandbox_version
+        base_url_sandbox_version()
     end
   end
 
