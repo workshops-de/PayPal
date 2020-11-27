@@ -3,10 +3,8 @@ defmodule PayPal.API do
   Documentation for PayPal.API. This module is about the base HTTP functionality
   """
   require Logger
-  @base_url_sandbox_version_one "https://api.sandbox.paypal.com/v1/"
-  @base_url_live_version_one "https://api.paypal.com/v1/"
-  @base_url_sandbox_version_two "https://api.sandbox.paypal.com/v2/"
-  @base_url_live_version_two "https://api.paypal.com/v2/"
+  @base_url_sandbox "https://api.sandbox.paypal.com/"
+  @base_url_live "https://api.paypal.com/"
 
   @doc """
   Requests an OAuth token from PayPal, returns a tuple containing the token and seconds till expiry.
@@ -35,7 +33,7 @@ defmodule PayPal.API do
 
     form = {:form, [grant_type: "client_credentials"]}
 
-    case HTTPoison.post(base_url(:v1) <> "oauth2/token", form, headers, options) do
+    case HTTPoison.post(base_url() <> "v1/oauth2/token", form, headers, options) do
       {:ok, %{status_code: 401}} ->
         {:error, :unauthorised}
 
@@ -115,7 +113,6 @@ defmodule PayPal.API do
   @spec post(String.t(), map) :: {atom, any}
   def post(url, data) do
     {:ok, data} = Poison.encode(data)
-
     case HTTPoison.post(base_url() <> url, data, headers()) do
       {:ok, %{status_code: 401}} ->
         {:error, :unauthorised}
@@ -202,96 +199,20 @@ defmodule PayPal.API do
     }
   end
 
-  @spec base_url :: String.t()
-  defp base_url(version) do
-    case Application.get_env(:pay_pal, :environment) do
-      :sandbox ->
-        base_url_sandbox_version(version)
-
-      :live ->
-        base_url_live_version(version)
-
-      :prod ->
-        base_url_live_version(version)
-
-      _ ->
-        Logger.warn("[PayPal] No `env` found in config, use `sandbox` as default.")
-        base_url_sandbox_version(version)
-    end
-  end
-
   defp base_url do
     case Application.get_env(:pay_pal, :environment) do
       :sandbox ->
-        base_url_sandbox_version()
+        @base_url_sandbox
 
       :live ->
-        base_url_live_version()
+        @base_url_live
 
       :prod ->
-        base_url_live_version()
+        @base_url_live
 
       _ ->
         Logger.warn("[PayPal] No `env` found in config, use `sandbox` as default.")
-        base_url_sandbox_version()
-    end
-  end
-
-  defp base_url_sandbox_version(version) do
-    version = if version do
-      version
-    else
-      Application.get_env(:pay_pal, :version)
-    end
-    case version do
-      :v2 ->
-        Logger.info("[PayPal] is using version_2 sandbox url.")
-        @base_url_sandbox_version_two
-
-      _ ->
-        Logger.info("[PayPal] is using version_1 sandbox url.")
-        @base_url_sandbox_version_one
-    end
-  end
-
-  defp base_url_sandbox_version do
-    case Application.get_env(:pay_pal, :version) do
-      :v2 ->
-        Logger.info("[PayPal] is using version_2 sandbox url.")
-        @base_url_sandbox_version_two
-
-      _ ->
-        Logger.info("[PayPal] is using version_1 sandbox url.")
-        @base_url_sandbox_version_one
-    end
-  end
-
-  defp base_url_live_version(version) do
-    version = if version do
-      version
-    else
-      Application.get_env(:pay_pal, :version)
-    end
-    case version do
-      :v2 ->
-        Logger.info("[PayPal] is using version_2 live url.")
-        @base_url_live_version_two
-
-      _ ->
-        Logger.info("[PayPal] is using version_1 live url.")
-        @base_url_live_version_one
-    end
-  end
-
-  defp base_url_live_version do
-    case Application.get_env(:pay_pal, :version) do
-      :v2 ->
-        Logger.info("[PayPal] is using version_2 live url.")
-        @base_url_live_version_two
-
-      _ ->
-        Logger.info("[PayPal] is using version_1 live url.")
-        @base_url_live_version_one
+        @base_url_sandbox
     end
   end
 end

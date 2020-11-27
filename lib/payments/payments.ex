@@ -247,7 +247,7 @@ defmodule PayPal.Payments.Payments do
     {:ok, payment}
 
   """
-  @spec update(String.t(), list) :: {atom, any}
+  @spec update(String.t(), map) :: {atom, any}
   def update(payment_id, changes) do
     PayPal.API.patch("payments/payment/#{payment_id}", changes)
   end
