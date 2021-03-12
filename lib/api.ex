@@ -41,6 +41,9 @@ defmodule PayPal.API do
         %{access_token: access_token, expires_in: expires_in} = Poison.decode!(body, keys: :atoms)
         {:ok, {access_token, expires_in}}
 
+      {:ok, %{body: body}} = _resp ->
+        {:error, body}
+
       _ ->
         {:error, :bad_network}
     end
