@@ -26,10 +26,10 @@ defmodule PayPal.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 1.7"},
+      {:httpoison, "~> 2.0"},
       {:poison, "~> 3.1"},
       {:oauth2, "~> 2.0"},
-      {:exvcr, "~> 0.11", only: [:dev, :test]},
+      {:exvcr, "~> 0.15", only: [:dev, :test]},
       {:ex_doc, "~> 0.23", only: [:dev, :docs]},
       {:excoveralls, "~> 0.10", only: [:dev, :test]},
       {:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
